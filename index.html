@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="黔行 · 贵州景区导览：按 5A、4A、3A 等级浏览贵州代表性景区，查看评分与介绍，点击景区进入详情页，登录后可收藏、评价心动的旅行目的地。">
+  <meta name="theme-color" content="#0d5c4d">
+  <title>黔行 · 贵州景区导览</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body data-page="home">
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html" aria-label="黔行 · 贵州景区导览首页">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" focusable="false">
+            <path d="M3 24 11 11l5 8 4-6 9 11H3Z" fill="currentColor" opacity=".96"/>
+            <circle cx="24" cy="8" r="3" fill="#f4d58b"/>
+          </svg>
+        </span>
+        <span class="brand-text">
+          <strong>黔行</strong>
+          <small>多彩贵州 · 景区导览</small>
+        </span>
+      </a>
+
+      <nav class="main-nav" aria-label="主导航">
+        <a href="index.html" data-nav="home">景区列表</a>
+        <a href="favorites.html" data-nav="favorites">
+          我的收藏
+          <span class="nav-count" id="favNavCount" hidden>0</span>
+        </a>
+      </nav>
+
+      <div class="header-auth" id="headerAuth">
+        <a class="btn btn-quiet btn-sm" href="login.html">登录</a>
+        <a class="btn btn-solid btn-sm" href="login.html?tab=register">注册</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" aria-label="贵州景区风光轮播">
+      <div class="hero-slides" aria-hidden="true">
+		  <div class="hero-slide hero-slide-brand" data-hero-slide="6">
+		    <div class="hero-art">
+		      <span class="hero-watermark">黔</span>
+		      <svg class="hero-ridges" viewBox="0 0 1440 420" preserveAspectRatio="none" focusable="false">
+		        <path class="ridge ridge-1" d="M0 330 210 214 390 300 610 154 820 312 1030 236 1240 318 1440 198V420H0Z"/>
+		        <path class="ridge ridge-2" d="M0 366 250 272 470 340 700 246 900 348 1140 284 1290 344 1440 292V420H0Z"/>
+		        <path class="ridge ridge-3" d="M0 398 190 340 410 386 640 320 880 390 1100 338 1280 388 1440 352V420H0Z"/>
+		      </svg>
+		    </div>
+		  </div>
+        <div class="hero-slide is-active" data-hero-slide="0" style="background-image:url('assets/img/hero/huangguoshu-falls.jpg')"></div>
+        <div class="hero-slide" data-hero-slide="1" style="background-image:url('assets/img/hero/fanjing-mountains.jpg')"></div>
+        <div class="hero-slide" data-hero-slide="2" style="background-image:url('assets/img/hero/zunyi-meeting.jpg')"></div>
+        <div class="hero-slide" data-hero-slide="3" style="background-image:url('assets/img/hero/chishui-danxia.jpg')"></div>
+        <div class="hero-slide" data-hero-slide="4" style="background-image:url('assets/img/hero/xiaoqikong.jpg')"></div>
+        <div class="hero-slide" data-hero-slide="5" style="background-image:url('assets/img/hero/zhijindong.jpg')"></div>
+      </div>
+
+      <div class="hero-shade" aria-hidden="true"></div>
+
+      <div class="container hero-inner">
+        <p class="hero-eyebrow"><span aria-hidden="true"></span>GUIZHOU · 山地公园省<span aria-hidden="true"></span></p>
+        <h1>在贵州的山水里，<br><em>找到你的下一站</em></h1>
+        <p class="hero-desc">
+          从黄果树的轰鸣到梵净山的云海，按景区等级浏览贵州代表性目的地。
+          登录后还能收藏景区、打分写评价，随时回来继续规划。
+        </p>
+
+        <div class="hero-stats" aria-label="景区数据概览">
+          <div class="stat"><strong id="statTotal">20</strong><span>精选景区</span></div>
+          <div class="stat"><strong id="statLevel5a">8</strong><span>5A 级景区</span></div>
+          <div class="stat"><strong id="statFav">0</strong><span>我的收藏</span></div>
+        </div>
+      </div>
+
+      <button type="button" class="hero-arrow hero-arrow-prev" data-hero-prev aria-label="上一张图片">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">
+          <path d="m14.5 5-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <button type="button" class="hero-arrow hero-arrow-next" data-hero-next aria-label="下一张图片">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">
+          <path d="m9.5 5 7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </section>
+
+    <div class="container">
+      <div class="browse-head">
+        <div>
+          <p class="section-eyebrow">按等级探索</p>
+          <h2>贵州景区分级导览</h2>
+        </div>
+        <p class="browse-note">从世界级名片到城市周边，按你的时间与兴趣，挑一条合适的路线。</p>
+      </div>
+
+      <div class="browse-search-row">
+        <div class="hero-search" role="search">
+          <svg class="search-icon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
+            <circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="1.8"/>
+            <path d="m16.5 16.5 4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+          <label class="sr-only" for="searchInput">搜索景区、城市或玩法</label>
+          <input id="searchInput" type="search" placeholder="搜索景区、城市或玩法，如“瀑布”“苗寨”" autocomplete="off" spellcheck="false">
+          <button type="button" class="search-clear" id="clearSearch" aria-label="清空搜索" hidden>×</button>
+        </div>
+      </div>
+
+      <div class="filter-wrap">
+        <div class="level-filter" id="levelFilters" role="group" aria-label="按景区等级筛选">
+          <button type="button" class="filter-tab is-active" data-level-filter="ALL" aria-pressed="true">
+            全部 <span class="tab-count" data-count-for="ALL">20</span>
+          </button>
+          <button type="button" class="filter-tab" data-level-filter="5A" aria-pressed="false">
+            5A 级 <span class="tab-count" data-count-for="5A">8</span>
+          </button>
+          <button type="button" class="filter-tab" data-level-filter="4A" aria-pressed="false">
+            4A 级 <span class="tab-count" data-count-for="4A">8</span>
+          </button>
+          <button type="button" class="filter-tab" data-level-filter="3A" aria-pressed="false">
+            3A 级 <span class="tab-count" data-count-for="3A">4</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="result-bar">
+        <span class="result-text" id="resultText" aria-live="polite">全部景区 · 共 20 个</span>
+        <button type="button" class="text-btn" id="resetFilters" hidden>清除筛选</button>
+      </div>
+
+      <div class="spot-sections" id="spotSections" aria-live="polite"></div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <span class="footer-mark" aria-hidden="true">黔</span>
+        <div>
+          <strong>黔行 · 贵州景区导览</strong>
+          <p>山路弯弯，风景慢慢。</p>
+        </div>
+      </div>
+      <div class="footer-links">
+        <a href="index.html">景区列表</a>
+        <a href="favorites.html">我的收藏</a>
+        <a href="login.html">登录 / 注册</a>
+      </div>
+      <p class="footer-note">演示项目。景区等级、票价与开放信息请以官方最新公告为准。</p>
+    </div>
+  </footer>
+
+  <script src="assets/js/data.js" defer></script>
+  <script src="assets/js/store.js" defer></script>
+  <script src="assets/js/ui.js" defer></script>
+  <script src="assets/js/hero.js" defer></script>
+  <script src="assets/js/list.js" defer></script>
+</body>
+</html>
