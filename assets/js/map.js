@@ -26,11 +26,13 @@
   let provinceFeatures = [];
   const nameToAdcode = Object.create(null);
   const shortNames = Object.create(null);
-  // 自建命中检测：GeoJSON 顶点投影成像素后的多边形
+  // 自建命中检测：GeoJSON 顶点投影后的像素多边形
   let hitAreas = [];
   let hitDirty = true;
   let hoveredName = null;
-  let hoverRaf = 0;
+  let lastHoverTs = 0;
+  // 悬停提示（ECharts 自带 tooltip 依赖其事件层，这里自绘以保证可用）
+  let hoverTip = null;
 
   function make(tag, className, id) {
     const node = doc.createElement(tag);
@@ -68,7 +70,10 @@
       const btn = event.target.closest('[data-city-adcode]');
       if (!btn) return;
       const adcode = btn.getAttribute('data-city-adcode');
-      global.location.href = 'city.html?adcode=' + adcode + '&mode=spots';
+      if (!adcode) return;
+      // 跳转到城市详情页（city.js 支持 adcode + mode 参数）
+      global.location.href =
+        'city.html?adcode=' + encodeURIComponent(adcode) + '&mode=food';
     });
   }
 
@@ -88,6 +93,7 @@
     return data[String(adcode)] || null;
   }
 
+  // 缓存省级 GeoJSON 的 features（ECharts 的 getOption() 不会回填 geoJSON）
   function indexFeatures(geoJSON) {
     provinceFeatures = (geoJSON && geoJSON.features) || [];
     provinceFeatures.forEach(function (feat) {
@@ -100,7 +106,7 @@
     });
   }
 
-  // ECharts 回调参数顶层没有 adcode，需要从 data 或区域名反查
+  // ECharts 的 click params 不带顶层 adcode，需要从 data 或区域名反查
   function resolveAdcode(params) {
     if (!params) return null;
     if (params.data && params.data.adcode != null) return String(params.data.adcode);
@@ -112,7 +118,7 @@
     return shortNames[params.name] || params.name || '';
   }
 
-  // 生成 series.data；传入 focusAdcode 时给选中/未选中区域配不同样式（淡出效果）
+  // 生成 series.data；传入 focusAdcode 时给选中/未选中区域配不同样式
   function provinceData(focusAdcode) {
     return provinceFeatures.map(function (feat) {
       const props = feat.properties || {};
@@ -143,30 +149,9 @@
       backgroundColor: 'transparent',
       animationDurationUpdate: ANIM_MS,
       animationEasingUpdate: 'cubicInOut',
-      tooltip: {
-        trigger: 'item',
-        formatter: function (params) {
-          const name = shortLabel(params);
-          const adcode = resolveAdcode(params);
-          const city = adcode ? getCityByAdcode(adcode) : null;
-          if (!city) return name;
-          return (
-            '<div class="fp-map-tip">' +
-            '<strong>' + name + '</strong>' +
-            '<span class="fp-map-tip-sub">' + (city.nickname || '') + '</span>' +
-            '<div class="fp-map-tip-stats">' +
-            '<em>' + city.foods.length + '</em> 美食推荐 · ' +
-            '<em>' + city.spots.length + '</em> 景点精选' +
-            '</div>' +
-            '</div>'
-          );
-        },
-        backgroundColor: 'rgba(7, 42, 36, 0.92)',
-        borderColor: 'rgba(244, 213, 139, 0.55)',
-        borderWidth: 1,
-        textStyle: { color: '#fff' },
-        extraCssText: 'box-shadow: 0 16px 34px -20px rgba(0,0,0,0.65); border-radius: 10px; padding: 10px 14px;'
-      },
+      // 悬停提示统一由 map.js 自绘的 .fp-map-hover-tip 提供，
+      // 关闭 ECharts 自带 tooltip，避免同一区域弹出两个提示框
+      tooltip: { show: false },
       series: [
         {
           name: '贵州全省',
@@ -276,9 +261,13 @@
     global.GZ_MAP_ACTIVE = false;
     hitDirty = true;
     hoveredName = null;
+    hideTip();
     removeFloatingButtons(stage);
+    if (chart.getDom()) chart.getDom().style.cursor = 'default';
 
+    // 必须显式把 map 切回 guizhou，否则仍停留在区县地图
     chart.setOption({
+      animationDurationUpdate: ANIM_MS,
       series: [
         {
           map: 'guizhou',
@@ -306,7 +295,15 @@
               borderWidth: 2
             }
           },
-          select: { disabled: false }
+          select: {
+            disabled: false,
+            label: { color: '#ffffff' },
+            itemStyle: {
+              areaColor: '#f4d58b',
+              borderColor: '#ffffff',
+              borderWidth: 2.5
+            }
+          }
         }
       ]
     });
@@ -322,6 +319,7 @@
     global.GZ_MAP_ACTIVE = true;
     hitDirty = true;
     hoveredName = null;
+    hideTip();
     if (chart.getDom()) chart.getDom().style.cursor = 'default';
 
     // 选中市的几何中心（GeoJSON properties.center = [lng, lat]）
@@ -334,7 +332,9 @@
     }
 
     // 第一阶段：选中市高亮放大居中，其他市淡出变暗
+    // 注意：ECharts 的 itemStyle 不支持回调函数，逐区域样式必须写在 data 的 itemStyle 里
     chart.setOption({
+      animationDurationUpdate: ANIM_MS,
       series: [
         {
           zoom: 2.1,
@@ -470,6 +470,68 @@
     return null;
   }
 
+  // ---------- 悬停提示 ----------
+
+  function tipMarkup(area) {
+    const city = getCityByAdcode(area.adcode);
+    const name = shortNames[area.name] || area.name;
+    if (!city) return '<div class="fp-map-tip"><strong>' + name + '</strong></div>';
+    return (
+      '<div class="fp-map-tip">' +
+      '<strong>' + name + '</strong>' +
+      '<span class="fp-map-tip-sub">' + (city.nickname || '') + '</span>' +
+      '<div class="fp-map-tip-stats">' +
+      '<em>' + city.foods.length + '</em> 美食推荐 · ' +
+      '<em>' + city.spots.length + '</em> 景点精选' +
+      '</div>' +
+      '</div>'
+    );
+  }
+
+  function showTip(area, clientX, clientY) {
+    if (!stage) return;
+    if (!hoverTip) {
+      hoverTip = make('div', 'fp-map-hover-tip');
+      hoverTip.setAttribute('aria-hidden', 'true');
+      stage.appendChild(hoverTip);
+    }
+    const html = tipMarkup(area);
+    if (hoverTip.innerHTML !== html) hoverTip.innerHTML = html;
+    const rect = stage.getBoundingClientRect();
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+    const flip = x > rect.width - 230;
+    hoverTip.style.transform = flip
+      ? 'translate(-100%, -50%) translateX(-14px)'
+      : 'translate(14px, -50%)';
+    hoverTip.style.left = x + 'px';
+    hoverTip.style.top = y + 'px';
+    hoverTip.classList.add('is-visible');
+  }
+
+  function hideTip() {
+    if (hoverTip) hoverTip.classList.remove('is-visible');
+  }
+
+  // 悬停高亮：dispatchAction('highlight') 在本页事件层下不生效，
+  // 改为直接改写该区域的 data.itemStyle
+  function applyHover(area) {
+    if (!chart) return;
+    const hoverAdcode = area ? String(area.adcode) : null;
+    const data = provinceData(null).map(function (item) {
+      if (hoverAdcode != null && String(item.adcode) === hoverAdcode) {
+        item.itemStyle = {
+          areaColor: '#e6c27a',
+          borderColor: '#ffffff',
+          borderWidth: 2
+        };
+        item.label = { color: '#06302a' };
+      }
+      return item;
+    });
+    chart.setOption({ animationDurationUpdate: 0, series: [{ data: data }] });
+  }
+
   function attachHitTest() {
     stage.addEventListener('click', function (event) {
       if (selectedAdcode) return;
@@ -480,30 +542,30 @@
 
     stage.addEventListener('mousemove', function (event) {
       if (selectedAdcode) return;
-      const cx = event.clientX;
-      const cy = event.clientY;
-      if (hoverRaf) return;
-      hoverRaf = global.requestAnimationFrame(function () {
-        hoverRaf = 0;
-        if (!chart || selectedAdcode) return;
-        const area = areaAt(cx, cy);
-        const name = area ? area.name : null;
-        if (name === hoveredName) return;
-        if (hoveredName) {
-          chart.dispatchAction({ type: 'downplay', seriesIndex: 0, name: hoveredName });
-        }
-        hoveredName = name;
-        if (name) {
-          chart.dispatchAction({ type: 'highlight', seriesIndex: 0, name: name });
-          chart.getDom().style.cursor = 'pointer';
-        } else {
-          chart.getDom().style.cursor = 'default';
-        }
-      });
+      const now = Date.now();
+      if (now - lastHoverTs < 16) return;
+      lastHoverTs = now;
+      if (!chart) return;
+      const area = areaAt(event.clientX, event.clientY);
+      const name = area ? area.name : null;
+      if (area) showTip(area, event.clientX, event.clientY);
+      else hideTip();
+      if (name === hoveredName) return;
+      hoveredName = name;
+      applyHover(area);
+      chart.getDom().style.cursor = name ? 'pointer' : 'default';
+    });
+
+    stage.addEventListener('mouseleave', function () {
+      hideTip();
+      hoveredName = null;
+      applyHover(null);
+      if (chart && chart.getDom()) chart.getDom().style.cursor = 'default';
     });
   }
 
   function attachEvents() {
+    // ECharts 原生 click 作兜底（命中检测为主路径）
     chart.on('click', function (params) {
       if (selectedAdcode) return;
       const adcode = resolveAdcode(params);
@@ -551,7 +613,8 @@
 
     global.echarts.registerMap('guizhou', provinceGeoJSON);
 
-    const mount = make('div', 'fp-map-canvas', 'fpMapEcharts');
+    // 内层容器单独 id，避免与 fullpage.js 的 #fpMapCanvas 重复
+    const mount = make('div', 'fp-map-canvas', 'fpMapCanvasInner');
     target.appendChild(mount);
 
     chart = global.echarts.init(mount, null, { renderer: 'canvas' });

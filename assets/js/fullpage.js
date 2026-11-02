@@ -39,6 +39,7 @@
   const DURATION = 900;
   const LABELS = ['首页', '贵州地图', '景区列表'];
   let mapInited = false;
+  let listScroll = null;
 
   function make(tag, className, id) {
     const node = doc.createElement(tag);
@@ -100,13 +101,21 @@
 
   const page3 = make('section', 'fp-section fp-section-list', 'page3');
   page3.setAttribute('aria-label', '景区列表');
-  const box3 = make('div', 'container');
+
+  // 顶部固定区：搜索 + 分级筛选，始终贴在页头下方，不随卡片滚动
+  const box3 = make('div', 'container fp-list-head');
   if (parts.search) box3.appendChild(parts.search);
   if (parts.filter) box3.appendChild(parts.filter);
-  if (parts.result) box3.appendChild(parts.result);
-  if (parts.list) box3.appendChild(parts.list);
   page3.appendChild(box3);
-  if (footer) page3.appendChild(footer);
+
+  // 屏内独立滚动区：结果条 + 景区卡片 + 页脚
+  listScroll = make('div', 'fp-list-scroll');
+  const listInner = make('div', 'container');
+  if (parts.result) listInner.appendChild(parts.result);
+  if (parts.list) listInner.appendChild(parts.list);
+  listScroll.appendChild(listInner);
+  if (footer) listScroll.appendChild(footer);
+  page3.appendChild(listScroll);
 
   track.appendChild(page1);
   track.appendChild(page2);
@@ -228,27 +237,27 @@
   function innerScrollable(dir) {
     const section = sections[index];
     if (!section.classList.contains('fp-section-list')) return false;
-    const max = section.scrollHeight - section.clientHeight;
+    if (!listScroll) return false;
+    const max = listScroll.scrollHeight - listScroll.clientHeight;
     if (max <= 2) return false;
-    return dir > 0 ? section.scrollTop < max - 2 : section.scrollTop > 2;
+    return dir > 0 ? listScroll.scrollTop < max - 2 : listScroll.scrollTop > 2;
   }
 
   function scrollListBy(amount) {
-    const section = sections[index];
-    if (typeof section.scrollBy === 'function') {
-      section.scrollBy({ top: amount, behavior: 'smooth' });
+    if (!listScroll) return;
+    if (typeof listScroll.scrollBy === 'function') {
+      listScroll.scrollBy({ top: amount, behavior: 'smooth' });
     } else {
-      section.scrollTop += amount;
+      listScroll.scrollTop += amount;
     }
   }
 
   function resetListScroll() {
-    const section = sections[2];
-    if (section.scrollTop <= 0) return;
-    if (typeof section.scrollTo === 'function') {
-      section.scrollTo({ top: 0, behavior: 'smooth' });
+    if (!listScroll || listScroll.scrollTop <= 0) return;
+    if (typeof listScroll.scrollTo === 'function') {
+      listScroll.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
-      section.scrollTop = 0;
+      listScroll.scrollTop = 0;
     }
   }
 
@@ -284,7 +293,14 @@
       if (index === 1 && global.GZ_MAP_ACTIVE) return;
 
       const delta = event.deltaMode === 1 ? event.deltaY * 16 : event.deltaY;
-      if (innerScrollable(delta)) return;
+      if (innerScrollable(delta)) {
+        // 指针停在顶部固定条上时，也让滚轮驱动卡片区滚动
+        if (index === 2 && listScroll && !listScroll.contains(event.target)) {
+          event.preventDefault();
+          listScroll.scrollTop += delta;
+        }
+        return;
+      }
 
       event.preventDefault();
       if (locked) return;
@@ -361,7 +377,7 @@
       }
       touching = true;
       touchY = event.touches[0].clientY;
-      touchTop = sections[index].scrollTop;
+      touchTop = index === 2 && listScroll ? listScroll.scrollTop : 0;
     },
     { passive: true }
   );
@@ -373,7 +389,8 @@
       touching = false;
       const dy = touchY - event.changedTouches[0].clientY;
       if (Math.abs(dy) < 56) return;
-      if (Math.abs(sections[index].scrollTop - touchTop) > 6) return;
+      const moved = index === 2 && listScroll ? Math.abs(listScroll.scrollTop - touchTop) : 0;
+      if (moved > 6) return;
       move(dy > 0 ? 1 : -1);
     },
     { passive: true }

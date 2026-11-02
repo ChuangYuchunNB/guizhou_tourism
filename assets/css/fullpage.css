@@ -142,6 +142,26 @@ html.fp-mode body[data-page="home"] {
   margin: 0 2px;
 }
 
+/* 地图悬停提示（由 map.js 自行绘制，不依赖 ECharts 事件层） */
+.fp-map-hover-tip {
+  position: absolute;
+  z-index: 4;
+  min-width: 150px;
+  padding: 10px 14px;
+  border: 1px solid rgba(244, 213, 139, 0.55);
+  border-radius: 10px;
+  background: rgba(7, 42, 36, 0.92);
+  box-shadow: 0 16px 34px -20px rgba(0, 0, 0, 0.65);
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(14px, -50%);
+  transition: opacity 0.16s ease;
+}
+
+.fp-map-hover-tip.is-visible {
+  opacity: 1;
+}
+
 .fp-map-back-btn {
   position: absolute;
   top: 14px;
@@ -305,9 +325,26 @@ html.fp-mode body[data-page="home"] {
   letter-spacing: 0.04em;
 }
 
-/* 第三屏：景区列表，屏内滚动 */
+/* 第三屏：顶部筛选条固定不动，卡片区在下方独立滚动 */
 .fp-section-list {
   padding-top: calc(var(--header-h) + 16px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.fp-list-head {
+  flex: 0 0 auto;
+}
+
+/* 筛选条不再用 sticky，直接作为固定区的一部分 */
+.fp-list-head .filter-wrap {
+  position: static;
+}
+
+.fp-list-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-width: thin;
@@ -317,7 +354,7 @@ html.fp-mode body[data-page="home"] {
   margin-top: 4px;
 }
 
-.fp-section-list .spot-sections {
+.fp-list-scroll .container {
   padding-bottom: 56px;
 }
 
