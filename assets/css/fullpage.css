@@ -1,0 +1,432 @@
+/* ---------- 首页整屏分页滚动 ---------- */
+
+html.fp-mode,
+html.fp-mode body {
+  height: 100%;
+  overflow: hidden;
+}
+
+html.fp-mode body[data-page="home"] {
+  height: 100vh;
+}
+
+.fp-viewport {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.fp-track {
+  position: relative;
+  width: 100%;
+  background:
+    radial-gradient(900px 540px at 8% -6%, rgba(13, 107, 92, 0.07), transparent 62%),
+    radial-gradient(860px 520px at 100% 2%, rgba(185, 132, 44, 0.08), transparent 62%),
+    var(--bg);
+  will-change: transform;
+  transition: transform 0.9s cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+.fp-section {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.fp-section-hero .hero {
+  height: 100vh;
+  min-height: 100vh;
+}
+
+/* 第二屏：贵州行政区划地图 */
+.fp-section-map {
+  padding-top: calc(var(--header-h) + 28px);
+  padding-bottom: 20px;
+  background:
+    radial-gradient(ellipse at 50% 15%, rgba(13, 107, 92, 0.08), transparent 55%),
+    radial-gradient(ellipse at 50% 100%, rgba(185, 132, 44, 0.06), transparent 55%),
+    var(--bg);
+}
+
+.fp-map-stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 0 clamp(16px, 4vw, 60px);
+}
+
+.fp-map-head {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.fp-map-kicker {
+  margin: 0 0 6px;
+  color: var(--gold);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+}
+
+.fp-map-head h3 {
+  font-family: var(--font-display);
+  font-size: clamp(22px, 2.8vw, 32px);
+  letter-spacing: 0.02em;
+  line-height: 1.32;
+}
+
+.fp-map-head h3 em {
+  font-style: normal;
+  color: var(--green);
+}
+
+.fp-map-sub {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+}
+
+.fp-map-wrap {
+  position: relative;
+  width: min(1200px, 100%);
+  height: calc(100vh - var(--header-h) - 170px);
+  margin: 0 auto;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.78);
+  box-shadow: 0 30px 60px -40px rgba(13, 50, 40, 0.42);
+  overflow: hidden;
+}
+
+.fp-map-canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.fp-map-tip {
+  padding: 2px 0;
+  line-height: 1.45;
+}
+
+.fp-map-tip strong {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #f4d58b;
+}
+
+.fp-map-tip-sub {
+  display: block;
+  margin-top: 2px;
+  color: rgba(245, 251, 247, 0.72);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+}
+
+.fp-map-tip-stats {
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(244, 213, 139, 0.22);
+  color: rgba(245, 251, 247, 0.9);
+  font-size: 11.5px;
+}
+
+.fp-map-tip-stats em {
+  font-style: normal;
+  color: #f4d58b;
+  font-weight: 700;
+  margin: 0 2px;
+}
+
+.fp-map-back-btn {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border: 1px solid rgba(13, 107, 92, 0.4);
+  border-radius: 999px;
+  color: var(--green-deep);
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 8px 20px -14px rgba(13, 50, 40, 0.35);
+  font-size: 12.5px;
+  font-weight: 600;
+  transform: translateX(-50%);
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.fp-map-back-btn:hover {
+  border-color: var(--green);
+  background: #fff;
+  box-shadow: 0 12px 28px -18px rgba(13, 50, 40, 0.5);
+}
+
+.fp-map-side-btn {
+  position: absolute;
+  top: 50%;
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 180px;
+  max-width: 220px;
+  padding: 14px 18px;
+  border: none;
+  border-radius: 18px;
+  color: #fff;
+  box-shadow: 0 16px 36px -20px rgba(0, 0, 0, 0.45);
+  font-size: 13.5px;
+  font-weight: 600;
+  text-align: left;
+  line-height: 1.5;
+  transform: translateY(-50%);
+  transition: transform 0.28s ease, box-shadow 0.28s ease;
+  animation: fp-map-side-in 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+  opacity: 0;
+}
+
+.fp-map-side-btn:hover {
+  transform: translateY(-50%) translateX(-2px);
+  box-shadow: 0 22px 44px -24px rgba(0, 0, 0, 0.55);
+}
+
+.fp-map-side-btn-food {
+  left: -10px;
+  background: linear-gradient(135deg, #c1484f 0%, #9e383d 100%);
+}
+
+.fp-map-side-btn-spot {
+  right: -10px;
+  background: linear-gradient(135deg, #0d6b5c 0%, #0a5045 100%);
+}
+
+.fp-map-side-btn-food:hover {
+  transform: translateY(-50%) translateX(2px);
+}
+
+.fp-map-side-btn-spot:hover {
+  transform: translateY(-50%) translateX(-2px);
+}
+
+.fp-map-side-icon {
+  font-size: 22px;
+  flex: 0 0 auto;
+}
+
+.fp-map-side-text {
+  flex: 1 1 auto;
+}
+
+@keyframes fp-map-side-in {
+  from {
+    opacity: 0;
+    transform: translateY(-50%) translateX(var(--fp-side-from, 0));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
+}
+
+.fp-map-side-btn-food {
+  --fp-side-from: -20px;
+}
+
+.fp-map-side-btn-spot {
+  --fp-side-from: 20px;
+}
+
+/* 离线降级：直接点击城市按钮列表 */
+.fp-map-fallback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  padding: 40px 24px;
+  width: 100%;
+  height: 100%;
+}
+
+.fp-map-fallback-title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  letter-spacing: 0.04em;
+}
+
+.fp-map-fallback-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px 14px;
+  width: min(560px, 100%);
+}
+
+.fp-map-fallback-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  color: var(--ink);
+  background: var(--surface);
+  font-size: 13.5px;
+  font-weight: 600;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.fp-map-fallback-btn:hover {
+  border-color: rgba(13, 107, 92, 0.5);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
+}
+
+.fp-map-fallback-name {
+  color: inherit;
+}
+
+.fp-map-fallback-chev {
+  color: var(--muted);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.fp-map-fallback-hint {
+  color: var(--muted);
+  font-size: 11.5px;
+  letter-spacing: 0.04em;
+}
+
+/* 第三屏：景区列表，屏内滚动 */
+.fp-section-list {
+  padding-top: calc(var(--header-h) + 16px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+.fp-section-list .browse-search-row {
+  margin-top: 4px;
+}
+
+.fp-section-list .spot-sections {
+  padding-bottom: 56px;
+}
+
+/* 首屏底部下滑提示 */
+.fp-hint {
+  position: absolute;
+  bottom: 22px;
+  left: 50%;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  color: rgba(240, 250, 244, 0.8);
+  font-size: 10.5px;
+  letter-spacing: 0.24em;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.fp-hint svg {
+  width: 18px;
+  height: 18px;
+  animation: fp-bounce 2.1s ease-in-out infinite;
+}
+
+@keyframes fp-bounce {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: translateY(0);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translateY(7px);
+  }
+}
+
+/* 右侧圆点导航 */
+.fp-dots {
+  position: fixed;
+  top: 50%;
+  right: clamp(10px, 2vw, 26px);
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 12px 9px;
+  border-radius: 999px;
+  background: rgba(8, 46, 40, 0.34);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transform: translateY(-50%);
+}
+
+.fp-dot {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  gap: 9px;
+  padding: 5px 0;
+  border: 0;
+  color: rgba(244, 250, 246, 0.82);
+  background: none;
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+}
+
+.fp-dot-label {
+  max-width: 0;
+  overflow: hidden;
+  opacity: 0;
+  white-space: nowrap;
+  transition: max-width 0.3s ease, opacity 0.3s ease;
+}
+
+.fp-dot:hover .fp-dot-label,
+.fp-dot.is-active .fp-dot-label {
+  max-width: 90px;
+  opacity: 1;
+}
+
+.fp-dot-mark {
+  width: 9px;
+  height: 9px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  transition: transform 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.fp-dot:hover .fp-dot-mark {
+  border-color: #f4d58b;
+}
+
+.fp-dot.is-active .fp-dot-mark {
+  border-color: #f4d58b;
+  background: #f4d58b;
+  transform: scale(1.25);
+}
+
+/* 屏内内容错峰淡入 */
+html.fp-mode .fp-reveal {
+  opacity: 0;
+  transform: translate3d(0, 26px, 0);
+  transition: opacity 0.66s ease, transform 0.78s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+html.fp-mode .fp-section.is-active .fp-reveal {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}

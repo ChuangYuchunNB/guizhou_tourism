@@ -71,12 +71,39 @@
 
   // 首页导航悬浮在轮播图上，滚动后转为实色底，保证文字可读
   const header = document.querySelector('.site-header');
-  function syncHeader() {
-    if (!header) return;
-    header.classList.toggle('is-solid', global.scrollY > 30);
+  const heroInner = hero.querySelector('.hero-inner');
+  const reduceMotion =
+    typeof global.matchMedia === 'function' &&
+    global.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let heroHeight = hero.offsetHeight || global.innerHeight;
+  let fadeFrame = 0;
+
+  // 顶部主视觉随滚动淋出：从满不可见到透明，同时稍微上移
+  function applyFade() {
+    if (!heroInner || reduceMotion) return;
+    const range = Math.max(220, heroHeight * 0.6);
+    const progress = Math.min(1, Math.max(0, (global.scrollY || 0) / range));
+    heroInner.style.opacity = String(1 - progress);
+    heroInner.style.transform = 'translate3d(0, ' + (-40 * progress).toFixed(1) + 'px, 0)';
+    heroInner.style.pointerEvents = progress > 0.5 ? 'none' : '';
   }
-  global.addEventListener('scroll', syncHeader, { passive: true });
-  syncHeader();
+
+  function syncScroll() {
+    if (header) header.classList.toggle('is-solid', global.scrollY > 30);
+    if (fadeFrame) return;
+    fadeFrame = global.requestAnimationFrame(function () {
+      fadeFrame = 0;
+      applyFade();
+    });
+  }
+
+  global.addEventListener('scroll', syncScroll, { passive: true });
+  global.addEventListener('resize', function () {
+    heroHeight = hero.offsetHeight || global.innerHeight;
+    syncScroll();
+  });
+  syncScroll();
 
   show(0);
   start();
