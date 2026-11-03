@@ -418,6 +418,11 @@
       escapeHtml(spot.colors[1]) +
       '">' +
       ridges +
+      '<img class="card-cover" loading="lazy" src="' +
+      escapeHtml(spot.heroImage) +
+      '" alt="' +
+      escapeHtml(spot.name) +
+      '封面">' +
       '<span class="level-pill" data-level="' +
       escapeHtml(spot.level) +
       '">' +

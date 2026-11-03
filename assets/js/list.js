@@ -1,4 +1,4 @@
-(function (global) {
+﻿(function (global) {
   'use strict';
 
   const state = {
@@ -154,7 +154,7 @@
 
   function openCard(card) {
     const id = card.getAttribute('data-spot');
-    if (id) global.location.href = 'spot.html?id=' + encodeURIComponent(id);
+    if (id) (global.Router && global.Router.goSpot) ? global.Router.goSpot(id) : (global.location.href = 'spot.html?id=' + encodeURIComponent(id));
   }
 
   function bindEvents() {

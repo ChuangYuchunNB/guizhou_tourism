@@ -288,6 +288,8 @@
     function (event) {
       if (event.ctrlKey || event.defaultPrevented) return;
       if (doc.body.classList.contains('modal-open')) return;
+      // SPA 视图下完全禁用 fullpage wheel 拦截（让页面正常滚动）
+      if (doc.body.classList.contains('spa-view')) return;
 
       // 地图屏且处于选中聚焦态时，放行给 ECharts roam 处理，不切屏
       if (index === 1 && global.GZ_MAP_ACTIVE) return;

@@ -1,28 +1,13 @@
+﻿/**
+ * 贵州美食与景点 city.js
+ * 支持两种模式：
+ *   1. 独立页面模式：直接访问 city.html?adcode=xxx&mode=food
+ *   2. SPA 模式：    Router.registerCityInit(CitySPA.init) 由 router.js 调用
+ */
 (function (global) {
   'use strict';
 
   const doc = document;
-  const params = new URLSearchParams(global.location.search);
-  const adcode = (params.get('adcode') || '').trim();
-  const defaultMode = params.get('mode') === 'spots' ? 'spots' : 'food';
-
-  const data = (global.GZ_CITY_DATA && global.GZ_CITY_DATA[adcode]) || null;
-
-  const els = {
-    header: doc.getElementById('cityHeader'),
-    kicker: doc.getElementById('cityKicker'),
-    name: doc.getElementById('cityName'),
-    nick: doc.getElementById('cityNick'),
-    desc: doc.getElementById('cityDesc'),
-    content: doc.getElementById('cityContent'),
-    tabFood: doc.getElementById('tabFood'),
-    tabSpots: doc.getElementById('tabSpots'),
-    tabFoodCount: doc.getElementById('tabFoodCount'),
-    tabSpotsCount: doc.getElementById('tabSpotsCount'),
-    note: doc.getElementById('cityNote')
-  };
-
-  let currentMode = defaultMode;
 
   function escape(str) {
     if (str == null) return '';
@@ -64,8 +49,6 @@
   }
 
   function renderSpotCard(item, adcode) {
-    // 尝试匹配 city.js 中同名景点到 GZ_SPOTS
-    let spotHref = '';
     const spots = global.GZ_SPOTS || [];
     const matched = spots.find(function (s) {
       return (
@@ -74,9 +57,7 @@
         s.name.indexOf(item.name) !== -1
       );
     });
-    if (matched) {
-      spotHref = 'city-spot-link';
-    }
+    const spotHref = matched ? 'city-spot-link' : '';
     return (
       '<article class="city-item city-item-spot' + (spotHref ? ' city-item-linked' : '') + '"' +
       (matched ? ' data-spot-id="' + matched.id + '"' : '') +
@@ -95,14 +76,16 @@
     );
   }
 
-  function render(mode) {
-    currentMode = mode;
+  // ---- 核心渲染 ----
+  function render(mode, els, adcode) {
+    const data = (global.GZ_CITY_DATA && global.GZ_CITY_DATA[adcode]) || null;
+
     if (!data) {
       els.content.innerHTML =
         '<div class="city-empty">' +
         '<h2>找不到这个市/自治州</h2>' +
         '<p>请从贵州地图首页点击进入，或检查链接是否正确。</p>' +
-        '<a class="btn btn-solid" href="index.html#page2">返回贵州地图</a>' +
+        '<a class="btn btn-solid" data-go-home="list">返回贵州地图</a>' +
         '</div>';
       return;
     }
@@ -130,71 +113,106 @@
       els.content.querySelectorAll('.city-item-linked').forEach(function (card) {
         card.addEventListener('click', function () {
           const id = card.getAttribute('data-spot-id');
-          if (id) global.location.href = 'spot.html?id=' + encodeURIComponent(id);
+          if (!id) return;
+          // SPA 优先
+          if (global.Router && global.Router.goSpot) {
+            global.Router.goSpot(id);
+          } else {
+            global.location.href = 'spot.html?id=' + encodeURIComponent(id);
+          }
         });
       });
     }
   }
 
-  function updateHeaderSolid() {
-    if (!els.header) return;
-    const solid = global.scrollY > 30;
-    els.header.classList.toggle('is-solid', solid);
-  }
+  // ---- 初始化（支持重复调用） ----
+  function initCity(options) {
+    options = options || {};
+    const adcode = (options.adcode || '').trim();
+    const mode = options.mode === 'spots' ? 'spots' : 'food';
 
-  function init() {
-    if (!data || !global.GZ_CITY_DATA[adcode]) {
-      els.kicker.textContent = 'ADCODE · ' + adcode;
-      els.name.textContent = '未知区域';
-      els.nick.textContent = '（数据暂缺）';
-      els.content.innerHTML =
-        '<div class="city-empty">' +
-        '<h2>找不到这个市/自治州</h2>' +
-        '<p>请从贵州地图首页点击进入，或检查链接是否正确。</p>' +
-        '<a class="btn btn-solid" href="index.html#page2">返回贵州地图</a>' +
-        '</div>';
-      els.tabFoodCount.textContent = '0';
-      els.tabSpotsCount.textContent = '0';
+    if (!adcode) return;
+
+    // 找 DOM（支持 SPA 容器前缀 #spaCity 和独立页面直接 ID）
+    var spaCity = doc.getElementById('spaCity');
+    var prefix = spaCity && !spaCity.hidden ? '#spaCity ' : '';
+
+    const els = {
+      header: doc.querySelector(prefix + '#cityHeader') || doc.getElementById('cityHeader'),
+      kicker: doc.querySelector(prefix + '#cityKicker') || doc.getElementById('cityKicker'),
+      name: doc.querySelector(prefix + '#cityName') || doc.getElementById('cityName'),
+      nick: doc.querySelector(prefix + '#cityNick') || doc.getElementById('cityNick'),
+      desc: doc.querySelector(prefix + '#cityDesc') || doc.getElementById('cityDesc'),
+      content: doc.querySelector(prefix + '#cityContent') || doc.getElementById('cityContent'),
+      tabFood: doc.querySelector(prefix + '#tabFood') || doc.getElementById('tabFood'),
+      tabSpots: doc.querySelector(prefix + '#tabSpots') || doc.getElementById('tabSpots'),
+      tabFoodCount: doc.querySelector(prefix + '#tabFoodCount') || doc.getElementById('tabFoodCount'),
+      tabSpotsCount: doc.querySelector(prefix + '#tabSpotsCount') || doc.getElementById('tabSpotsCount'),
+      note: doc.querySelector(prefix + '#cityNote') || doc.getElementById('cityNote')
+    };
+
+    const data = (global.GZ_CITY_DATA && global.GZ_CITY_DATA[adcode]) || null;
+
+    // 更新 header
+    if (!data) {
+      if (els.kicker) els.kicker.textContent = 'ADCODE · ' + adcode;
+      if (els.name) els.name.textContent = '未知区域';
+      if (els.nick) els.nick.textContent = '（数据暂缺）';
+      if (els.content) els.content.innerHTML =
+        '<div class="city-empty"><h2>找不到这个市/自治州</h2><p>请从贵州地图首页点击进入。</p></div>';
+      if (els.tabFoodCount) els.tabFoodCount.textContent = '0';
+      if (els.tabSpotsCount) els.tabSpotsCount.textContent = '0';
       return;
     }
 
-    els.kicker.textContent = 'GUIZHOU · ' + adcode;
-    els.name.textContent = data.name;
-    els.nick.textContent = data.nickname ? '「' + data.nickname + '」' : '';
-    els.desc.textContent =
+    if (els.kicker) els.kicker.textContent = 'GUIZHOU · ' + adcode;
+    if (els.name) els.name.textContent = data.name;
+    if (els.nick) els.nick.textContent = data.nickname ? '「' + data.nickname + '」' : '';
+    if (els.desc) els.desc.textContent =
       (data.counties && data.counties.length
         ? '下辖 ' + data.counties.length + ' 个区县：' + data.counties.slice(0, 6).join('、') + (data.counties.length > 6 ? ' 等' : '') + '。'
         : '') +
       '以下是本地代表性的' + data.foods.length + '种美食推荐与' + data.spots.length + '个精选景点。';
+    if (els.tabFoodCount) els.tabFoodCount.textContent = String(data.foods.length);
+    if (els.tabSpotsCount) els.tabSpotsCount.textContent = String(data.spots.length);
 
-    els.tabFoodCount.textContent = String(data.foods.length);
-    els.tabSpotsCount.textContent = String(data.spots.length);
+    doc.title = data.name + ' · 美食与景点 · 黔行';
 
-    global.document.title = data.name + ' · 美食与景点 · 黔行';
+    // tab 点击事件（只绑一次）
+    if (els.tabFood && !els.tabFood.__bound) {
+      els.tabFood.__bound = true;
+      els.tabFood.addEventListener('click', function () {
+        render('food', els, adcode);
+        global.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
+    if (els.tabSpots && !els.tabSpots.__bound) {
+      els.tabSpots.__bound = true;
+      els.tabSpots.addEventListener('click', function () {
+        render('spots', els, adcode);
+        global.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
 
-    render(defaultMode);
+    render(mode, els, adcode);
   }
 
-  if (els.tabFood) {
-    els.tabFood.addEventListener('click', function () {
-      render('food');
-      global.scrollTo({ top: 0, behavior: 'smooth' });
+  // ---- 独立页面自动启动 ----
+  // 只有 #cityHeader 存在（即当前是独立 city.html 页面）才自动跑
+  var standaloneHeader = doc.getElementById('cityHeader');
+  if (standaloneHeader) {
+    var params = new URLSearchParams(global.location.search);
+    initCity({
+      adcode: params.get('adcode') || '',
+      mode: params.get('mode')
     });
   }
-  if (els.tabSpots) {
-    els.tabSpots.addEventListener('click', function () {
-      render('spots');
-      global.scrollTo({ top: 0, behavior: 'smooth' });
-    });
+
+  // ---- SPA 注册 ----
+  if (global.Router && global.Router.registerCityInit) {
+    global.Router.registerCityInit(initCity);
   }
 
-  global.addEventListener('scroll', updateHeaderSolid, { passive: true });
-  global.addEventListener('resize', updateHeaderSolid);
-  updateHeaderSolid();
-
-  if (global.GZ_CITY_DATA) {
-    init();
-  } else {
-    global.addEventListener('load', init);
-  }
+  // 全局暴露（方便调试）
+  global.CitySPA = { init: initCity };
 })(window);

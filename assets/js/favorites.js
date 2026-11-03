@@ -1,4 +1,4 @@
-(function (global) {
+﻿(function (global) {
   'use strict';
 
   const elements = {
@@ -32,7 +32,7 @@
       '<span class="empty-icon" aria-hidden="true">💚</span>' +
       '<h2>收藏夹还是空的</h2>' +
       '<p>在景区列表点击卡片右上角的爱心，就能把喜欢的景区收进来。</p>' +
-      '<a class="btn btn-solid" href="index.html">去发现景区</a>' +
+      '<a class="btn btn-solid" data-go-home>去发现景区</a>' +
       '</div>';
   }
 
@@ -77,7 +77,7 @@
 
   function openCard(card) {
     const id = card.getAttribute('data-spot');
-    if (id) global.location.href = 'spot.html?id=' + encodeURIComponent(id);
+    if (id) (global.Router && global.Router.goSpot) ? global.Router.goSpot(id) : (global.location.href = 'spot.html?id=' + encodeURIComponent(id));
   }
 
   function bindEvents() {

@@ -1,4 +1,4 @@
-(function (global) {
+﻿(function (global) {
   'use strict';
 
   const doc = document;
@@ -208,24 +208,41 @@
 
     const foodBtn = make('button', 'fp-map-side-btn fp-map-side-btn-food');
     foodBtn.type = 'button';
+    foodBtn.title = '查看 ' + city.name + ' 的美食推荐';
     foodBtn.innerHTML =
-      '<span class="fp-map-side-icon">🍜</span>' +
-      '<span class="fp-map-side-text">查看 ' + city.name + ' 的美食推荐</span>';
+      '<span class="fp-map-side-btn-icon">🍜</span>' +
+      '<span class="fp-map-side-btn-text">查看 ' + city.name + ' 的美食推荐</span>';
     foodBtn.addEventListener('click', function () {
-      global.location.href = 'city.html?adcode=' + adcode + '&mode=food';
+      if (global.Router && global.Router.goCity) { global.Router.goCity(adcode, 'food'); }
+      else { global.location.href = 'city.html?adcode=' + adcode + '&mode=food'; }
     });
 
     const spotBtn = make('button', 'fp-map-side-btn fp-map-side-btn-spot');
     spotBtn.type = 'button';
+    spotBtn.title = '查看 ' + city.name + ' 的景点精选';
     spotBtn.innerHTML =
-      '<span class="fp-map-side-icon">🏞️</span>' +
-      '<span class="fp-map-side-text">查看 ' + city.name + ' 的景点精选</span>';
+      '<span class="fp-map-side-btn-icon">🏞️</span>' +
+      '<span class="fp-map-side-btn-text">查看 ' + city.name + ' 的景点精选</span>';
     spotBtn.addEventListener('click', function () {
-      global.location.href = 'city.html?adcode=' + adcode + '&mode=spots';
+      if (global.Router && global.Router.goCity) { global.Router.goCity(adcode, 'spots'); }
+      else { global.location.href = 'city.html?adcode=' + adcode + '&mode=spots'; }
     });
 
     parentNode.appendChild(foodBtn);
     parentNode.appendChild(spotBtn);
+
+    const cultureBtn = make('button', 'fp-map-side-btn fp-map-side-btn-culture');
+    cultureBtn.type = 'button';
+    cultureBtn.title = '查看 ' + city.name + ' 的文化概览';
+    cultureBtn.innerHTML =
+      '<span class="fp-map-side-btn-icon">🏛️</span>' +
+      '<span class="fp-map-side-btn-text">查看 ' + city.name + ' 的文化概览</span>';
+    cultureBtn.addEventListener('click', function () {
+      if (global.Router && global.Router.goCulture) { global.Router.goCulture(adcode); }
+      else { global.alert('文化视图仅在 SPA 模式下可用'); }
+    });
+
+    parentNode.appendChild(cultureBtn);
   }
 
   function createBackButton(parentNode) {
@@ -364,8 +381,9 @@
           series: [
             {
               map: 'city_' + key,
-              zoom: 1.02,
-              center: center,
+              // 让 ECharts 自动根据区县地图的 bounding box 居中
+              center: null,
+              zoom: 1,
               data: [],
               label: {
                 show: true,

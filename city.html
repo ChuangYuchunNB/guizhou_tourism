@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
@@ -12,7 +12,7 @@
 <body data-page="city">
   <header class="site-header site-header-transparent" id="cityHeader">
     <div class="container header-inner">
-      <a class="brand" href="index.html" aria-label="黔行 · 贵州景区导览首页">
+      <a class="brand" data-go-home aria-label="黔行 · 贵州景区导览首页">
         <span class="brand-mark" aria-hidden="true">
           <svg viewBox="0 0 32 32" focusable="false">
             <path d="M3 24 11 11l5 8 4-6 9 11H3Z" fill="currentColor" opacity=".96"/>
@@ -26,7 +26,7 @@
       </a>
 
       <nav class="main-nav" aria-label="主导航">
-        <a href="index.html" data-nav="home">景区列表</a>
+        <a data-go-home data-nav="home">景区列表</a>
         <a href="favorites.html" data-nav="favorites">
           我的收藏
           <span class="nav-count" id="favNavCount" hidden>0</span>
@@ -42,7 +42,7 @@
 
   <section class="city-hero" id="cityHero" aria-label="市/自治州详情头部">
     <div class="container city-hero-inner">
-      <a class="city-back" href="index.html#page2" aria-label="返回贵州全省地图">
+      <a class="city-back" data-go-home="list" aria-label="返回贵州全省地图">
         <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false">
           <path d="m14.5 5-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -90,7 +90,7 @@
         </div>
       </div>
       <div class="footer-links">
-        <a href="index.html">景区列表</a>
+        <a data-go-home>景区列表</a>
         <a href="favorites.html">我的收藏</a>
         <a href="login.html">登录 / 注册</a>
       </div>
@@ -98,6 +98,7 @@
     </div>
   </footer>
 
+  <script src="assets/js/navigate.js" defer></script>
   <script src="assets/js/data.js" defer></script>
   <script src="assets/js/city.js" defer></script>
 </body>

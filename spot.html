@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
@@ -12,7 +12,7 @@
 <body data-page="spot">
   <header class="site-header">
     <div class="container header-inner">
-      <a class="brand" href="index.html" aria-label="黔行 · 贵州景区导览首页">
+      <a class="brand" data-go-home aria-label="黔行 · 贵州景区导览首页">
         <span class="brand-mark" aria-hidden="true">
           <svg viewBox="0 0 32 32" focusable="false">
             <path d="M3 24 11 11l5 8 4-6 9 11H3Z" fill="currentColor" opacity=".96"/>
@@ -26,7 +26,7 @@
       </a>
 
       <nav class="main-nav" aria-label="主导航">
-        <a href="index.html" data-nav="home">景区列表</a>
+        <a data-go-home data-nav="home">景区列表</a>
         <a href="favorites.html" data-nav="favorites">
           我的收藏
           <span class="nav-count" id="favNavCount" hidden>0</span>
@@ -85,7 +85,7 @@
         </div>
       </div>
       <div class="footer-links">
-        <a href="index.html">景区列表</a>
+        <a data-go-home>景区列表</a>
         <a href="favorites.html">我的收藏</a>
         <a href="login.html">登录 / 注册</a>
       </div>
@@ -93,6 +93,7 @@
     </div>
   </footer>
 
+  <script src="assets/js/navigate.js" defer></script>
   <script src="assets/js/data.js" defer></script>
   <script src="assets/js/store.js" defer></script>
   <script src="assets/js/reviews.js" defer></script>
