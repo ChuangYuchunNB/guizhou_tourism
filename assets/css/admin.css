@@ -1,0 +1,352 @@
+/* 后台管理页样式（复用 main.css 的主题色与按钮/容器体系） */
+.admin-main {
+  padding: 32px 0 64px;
+}
+
+.admin-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.admin-head h1 {
+  margin: 6px 0 6px;
+  font-size: 26px;
+  color: #0d2b25;
+}
+.admin-sub {
+  margin: 0;
+  color: #5a6b66;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.admin-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.stat-card { display: flex; flex-direction: column; }
+.stat-card .stat-label { font-size: 13px; color: #6b7a75; }
+.stat-card .stat-value { font-size: 26px; font-weight: 700; color: #0d5c4d; margin-top: 4px; }
+.stat-card {
+  background: #fff;
+  border: 1px solid #e3ebe8;
+  border-radius: 12px;
+  padding: 16px 18px;
+}
+.stat-card .label {
+  font-size: 13px;
+  color: #6b7a75;
+}
+.stat-card .value {
+  font-size: 26px;
+  font-weight: 700;
+  color: #0d5c4d;
+  margin-top: 4px;
+}
+
+.admin-table-wrap {
+  background: #fff;
+  border: 1px solid #e3ebe8;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.admin-table thead th {
+  background: #f2f7f5;
+  color: #0d5c4d;
+  font-weight: 600;
+  text-align: left;
+  padding: 12px 14px;
+  border-bottom: 1px solid #e3ebe8;
+  white-space: nowrap;
+}
+.admin-table tbody td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #eef3f1;
+  vertical-align: middle;
+}
+.admin-table tbody tr:last-child td {
+  border-bottom: none;
+}
+.admin-table .empty-row {
+  text-align: center;
+  color: #8a9792;
+  padding: 28px;
+}
+.col-action {
+  width: 150px;
+  text-align: right;
+}
+
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  line-height: 1.6;
+  font-weight: 600;
+}
+.badge-admin { background: #e8f0fe; color: #1d4ed8; }
+.badge-user  { background: #eef3f1; color: #4a5b56; }
+.badge-active { background: #e6f6ec; color: #15803d; }
+.badge-banned { background: #fdecec; color: #c0392b; }
+
+.ban-info {
+  font-size: 12px;
+  color: #6b7a75;
+  line-height: 1.6;
+  max-width: 320px;
+}
+.ban-info .reason {
+  color: #c0392b;
+  font-weight: 600;
+}
+
+.btn-danger {
+  background: #c0392b !important;
+  color: #fff !important;
+  border: 1px solid #c0392b !important;
+}
+.btn-danger:hover { background: #a93226 !important; }
+
+/* 操作弹窗 */
+.admin-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.admin-modal[hidden] { display: none; }
+.admin-modal-mask {
+  position: absolute;
+  inset: 0;
+  background: rgba(13, 43, 37, 0.45);
+}
+.admin-modal-box {
+  position: relative;
+  width: 460px;
+  max-width: calc(100vw - 32px);
+  background: #fff;
+  border-radius: 14px;
+  padding: 22px 24px;
+  box-shadow: 0 18px 48px rgba(13, 43, 37, 0.25);
+}
+.admin-modal-box h3 {
+  margin: 0 0 8px;
+  font-size: 18px;
+  color: #0d2b25;
+}
+.admin-modal-msg {
+  margin: 0 0 14px;
+  font-size: 14px;
+  color: #4a5b56;
+}
+.admin-modal-label {
+  display: block;
+  font-size: 13px;
+  color: #4a5b56;
+  margin-bottom: 6px;
+}
+.admin-modal-label .req { color: #c0392b; }
+.admin-modal-box textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #cfd9d5;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  resize: vertical;
+  font-family: inherit;
+}
+.admin-modal-box textarea:focus {
+  outline: none;
+  border-color: #0d5c4d;
+  box-shadow: 0 0 0 3px rgba(13, 92, 77, 0.15);
+}
+.admin-modal-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 14px;
+}
+.char-count {
+  font-size: 12px;
+  color: #8a9792;
+}
+.admin-modal-foot > div { display: flex; gap: 8px; }
+
+/* 标签页导航 */
+.admin-tabs {
+  display: flex;
+  gap: 6px;
+  border-bottom: 1px solid #e3ebe8;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+.admin-tab {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #6b7a75;
+  cursor: pointer;
+  font-family: inherit;
+}
+.admin-tab:hover { color: #0d5c4d; }
+.admin-tab.is-active {
+  color: #0d5c4d;
+  border-bottom-color: #0d5c4d;
+}
+
+.admin-panel { margin-bottom: 12px; }
+.panel-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+.panel-toolbar h2 { margin: 0; font-size: 18px; color: #0d2b25; }
+.panel-tip { margin: 0 0 12px; font-size: 13px; color: #6b7a75; }
+
+/* 数据表（与旧 admin-table 共存） */
+.data-table-wrap {
+  background: #fff;
+  border: 1px solid #e3ebe8;
+  border-radius: 12px;
+  overflow-x: auto;
+}
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.data-table thead th {
+  background: #f2f7f5;
+  color: #0d5c4d;
+  font-weight: 600;
+  text-align: left;
+  padding: 12px 14px;
+  border-bottom: 1px solid #e3ebe8;
+  white-space: nowrap;
+}
+.data-table tbody td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #eef3f1;
+  vertical-align: middle;
+}
+.data-table tbody tr:last-child td { border-bottom: none; }
+.data-table .empty-row { text-align: center; color: #8a9792; padding: 28px; }
+
+.badge-level { background: #e8f0fe; color: #1d4ed8; }
+.row-sub { font-size: 12px; color: #8a9792; margin-top: 2px; }
+.col-rating { white-space: nowrap; color: #d97706; letter-spacing: 1px; }
+.col-content { max-width: 360px; word-break: break-word; color: #4a5b56; }
+.muted { color: #8a9792; }
+
+/* 新增景点表单 */
+.spot-form { display: flex; flex-direction: column; gap: 12px; }
+.spot-form label {
+  display: block;
+  font-size: 13px;
+  color: #4a5b56;
+  font-weight: 600;
+}
+.spot-form label em { color: #c0392b; font-style: normal; }
+.spot-form input[type="text"],
+.spot-form input[type="number"],
+.spot-form select,
+.spot-form textarea {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 6px;
+  border: 1px solid #cfd9d5;
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-size: 14px;
+  font-family: inherit;
+}
+.spot-form textarea { resize: vertical; min-height: 72px; }
+.spot-form input:focus,
+.spot-form select:focus,
+.spot-form textarea:focus {
+  outline: none;
+  border-color: #0d5c4d;
+  box-shadow: 0 0 0 3px rgba(13, 92, 77, 0.15);
+}
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.color-row { display: flex; gap: 8px; margin-top: 6px; }
+.color-row input[type="color"] { width: 44px; height: 34px; padding: 2px; border: 1px solid #cfd9d5; border-radius: 8px; cursor: pointer; background: #fff; }
+
+/* 弹窗卡片：统一白底容器，标题/说明/表单/按钮共享同一水平内边距；
+   限高 + 内部滚动，避免内容过高时顶部标题被裁、底部按钮顶出视口 */
+.modal-card {
+  position: relative;
+  width: 460px;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  background: #fff;
+  border-radius: 16px;
+  padding: 22px 24px;
+  box-sizing: border-box;
+  box-shadow: 0 24px 60px rgba(13, 43, 37, 0.35);
+}
+
+.modal-card h3 {
+  margin: 0 0 8px;
+  font-size: 18px;
+  color: #0d2b25;
+}
+
+.modal-desc {
+  margin: 0 0 14px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #4a5b56;
+}
+
+.modal-card textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #cfd9d5;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.modal-card textarea:focus {
+  outline: none;
+  border-color: #0d5c4d;
+  box-shadow: 0 0 0 3px rgba(13, 92, 77, 0.15);
+}
+
+.modal-card-wide { width: 680px; max-width: calc(100vw - 32px); }
+.modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+
+@media (max-width: 720px) {
+  .admin-stats { grid-template-columns: repeat(2, 1fr); }
+  .data-table { font-size: 13px; }
+  .form-row { grid-template-columns: 1fr; }
+  .modal-card-wide { width: calc(100vw - 32px); }
+}

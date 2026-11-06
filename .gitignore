@@ -1,0 +1,22 @@
+.DS_Store
+Thumbs.db
+desktop.ini
+*.log
+.vscode/
+.idea/
+node_modules/
+# Spring Boot 后端构建产物
+backend/target/
+*.jar
+!.mvn/wrapper/*.jar
+
+# Trae / IDE 临时文件与 HTML 分享包
+.trae-html-share-packages/
+.trae/
+.screenshots/
+_report_shots/
+$dst/
+
+# 临时提取文件
+_docx_extract.zip
+*.tmp
