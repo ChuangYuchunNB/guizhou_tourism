@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>后台管理 · 黔行贵州景区导览</title>
+    <link rel="stylesheet" href="assets/css/main.css" />
+    <link rel="stylesheet" href="assets/css/admin.css" />
+  </head>
+  <body>
+    <header class="site-header" data-shell-header>
+      <!-- 由 ui.js renderHeader 注入 -->
+    </header>
+
+    <main class="admin-main">
+      <div class="page-head">
+        <p class="page-kicker">ADMIN CONSOLE</p>
+        <h1>后台管理</h1>
+        <p class="page-sub">管理用户、景点与评价。仅管理员可见，操作立即生效。</p>
+      </div>
+
+      <nav class="admin-tabs" role="tablist" aria-label="后台管理分区">
+        <button type="button" class="admin-tab is-active" data-tab="users" role="tab" aria-selected="true">用户管理</button>
+        <button type="button" class="admin-tab" data-tab="spots" role="tab" aria-selected="false">景点管理</button>
+        <button type="button" class="admin-tab" data-tab="reviews" role="tab" aria-selected="false">评论管理</button>
+      </nav>
+
+      <div class="admin-stats">
+        <div class="stat-card">
+          <span class="stat-label">注册用户</span>
+          <span class="stat-value" data-stat="users">–</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">正常用户</span>
+          <span class="stat-value" data-stat="active">–</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">已封禁</span>
+          <span class="stat-value" data-stat="banned">–</span>
+        </div>
+      </div>
+
+      <section id="panel-users" class="admin-panel is-active" role="tabpanel">
+        <div class="panel-toolbar">
+          <h2>用户管理</h2>
+          <span class="muted">封禁普通用户时需填写理由，被封禁用户登录时会看到该理由。</span>
+        </div>
+        <div id="userTable" class="data-table-wrap">加载中…</div>
+      </section>
+
+      <section id="panel-spots" class="admin-panel" role="tabpanel" hidden>
+        <div class="panel-toolbar">
+          <h2>景点管理</h2>
+          <button type="button" id="addSpotBtn" class="btn btn-solid">+ 新增景点</button>
+        </div>
+        <p class="panel-tip">新增的景点会同步到全站景区列表；删除已倒闭景点会同时清除其下所有评价。</p>
+        <div id="spotTable" class="data-table-wrap">加载中…</div>
+      </section>
+
+      <section id="panel-reviews" class="admin-panel" role="tabpanel" hidden>
+        <div class="panel-toolbar">
+          <h2>评论管理</h2>
+          <span class="muted">共 <span id="reviewCount">0</span> 条真实用户评价</span>
+        </div>
+        <p class="panel-tip">可查看全站用户评价，并对不当言论做删除处理；删除后对所有用户即时生效。</p>
+        <div id="reviewTable" class="data-table-wrap">加载中…</div>
+      </section>
+    </main>
+
+    <!-- 封禁理由弹窗 -->
+    <div id="banModal" class="modal-overlay" hidden>
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="banTitle">
+        <h3 id="banTitle">封禁用户</h3>
+        <p class="modal-desc">
+          你正在封禁 <strong id="banTarget">–</strong>。请填写封禁理由，该用户登录时会看到这条理由。
+        </p>
+        <textarea id="banReason" rows="4" maxlength="255" placeholder="例如：发布违规广告、恶意刷评等"></textarea>
+        <p class="char-count"><span id="banReasonCount">0</span>/255</p>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" data-close-modal>取消</button>
+          <button type="button" class="btn btn-danger" id="confirmBanBtn">确认封禁</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 新增/编辑景点表单弹窗 -->
+    <div id="spotModal" class="modal-overlay" hidden>
+      <div class="modal-card modal-card-wide" role="dialog" aria-modal="true" aria-labelledby="spotTitle">
+        <h3 id="spotTitle">新增景点</h3>
+        <form id="spotForm" class="spot-form" autocomplete="off">
+          <div class="form-row">
+            <label>景区标识 <em>*</em>
+              <input type="text" name="id" required placeholder="英文小写，如 xiaoqikong" />
+            </label>
+            <label>景区名称 <em>*</em>
+              <input type="text" name="name" required placeholder="如 小七孔景区" />
+            </label>
+          </div>
+          <div class="form-row">
+            <label>等级 <em>*</em>
+              <select name="level">
+                <option value="5A">5A</option>
+                <option value="4A">4A</option>
+                <option value="3A">3A</option>
+              </select>
+            </label>
+            <label>所在城市 <em>*</em>
+              <input type="text" name="city" required placeholder="如 黔南州" />
+            </label>
+          </div>
+          <div class="form-row">
+            <label>区/县
+              <input type="text" name="area" placeholder="如 荔波县" />
+            </label>
+            <label>地址
+              <input type="text" name="address" placeholder="景区详细地址" />
+            </label>
+          </div>
+          <div class="form-row">
+            <label>基础评分
+              <input type="number" name="rating" min="0" max="5" step="0.1" value="0" />
+            </label>
+            <label>评分人数
+              <input type="number" name="ratingCount" min="0" step="1" value="0" />
+            </label>
+          </div>
+          <label>一句话简介
+            <input type="text" name="summary" placeholder="一句话概括景区特色" />
+          </label>
+          <label>详细介绍
+            <textarea name="intro" rows="3" placeholder="景区的详细介绍"></textarea>
+          </label>
+          <div class="form-row">
+            <label>标签（逗号分隔）
+              <input type="text" name="tags" placeholder="世界遗产, 避暑, 亲子" />
+            </label>
+            <label>亮点（逗号分隔）
+              <input type="text" name="highlights" placeholder="古桥, 水上森林" />
+            </label>
+          </div>
+          <div class="form-row">
+            <label>最佳季节
+              <input type="text" name="bestSeason" placeholder="如 4–10 月" />
+            </label>
+            <label>建议游玩时长
+              <input type="text" name="duration" placeholder="如 1 天" />
+            </label>
+          </div>
+          <div class="form-row">
+            <label>参考票价
+              <input type="text" name="ticket" placeholder="如 约 110 元" />
+            </label>
+            <label>图标 emoji
+              <input type="text" name="emoji" placeholder="如 🌿" />
+            </label>
+          </div>
+          <div class="form-row">
+            <label>封面图路径
+              <input type="text" name="heroImage" placeholder="assets/img/cover/xxx.jpg" />
+            </label>
+            <label>主题色
+              <span class="color-row">
+                <input type="color" name="color1" value="#0d5c4d" />
+                <input type="color" name="color2" value="#4ade80" />
+              </span>
+            </label>
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="btn btn-ghost" data-close-modal>取消</button>
+            <button type="submit" class="btn btn-solid" id="saveSpotBtn">保存</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <footer class="site-footer">
+      <p>黔行 · 贵州景区导览 · 后台管理端</p>
+    </footer>
+
+    <script src="assets/js/navigate.js" defer></script>
+    <script src="assets/js/data.js" defer></script>
+    <script src="assets/js/store.js" defer></script>
+    <script src="assets/js/ui.js" defer></script>
+    <script src="assets/js/admin.js" defer></script>
+  </body>
+</html>

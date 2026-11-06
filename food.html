@@ -1,0 +1,103 @@
+﻿﻿﻿﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="黔行 · 贵州美食详情：查看特色美食介绍、参考价格与食客评价。">
+  <meta name="theme-color" content="#7c2d12">
+  <title>美食详情 · 黔行</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body data-page="food">
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" data-go-home aria-label="黔行 · 贵州景区导览首页">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" focusable="false">
+            <path d="M3 24 11 11l5 8 4-6 9 11H3Z" fill="currentColor" opacity=".96"/>
+            <circle cx="24" cy="8" r="3" fill="#f4d58b"/>
+          </svg>
+        </span>
+        <span class="brand-text">
+          <strong>黔行</strong>
+          <small>多彩贵州 · 景区导览</small>
+        </span>
+      </a>
+
+      <nav class="main-nav" aria-label="主导航">
+        <a data-go-home data-nav="home">景区列表</a>
+        <a href="favorites.html" data-nav="favorites">
+          我的收藏
+          <span class="nav-count" id="favNavCount" hidden>0</span>
+        </a>
+      </nav>
+
+      <div class="header-auth" id="headerAuth">
+        <a class="btn btn-quiet btn-sm" href="login.html">登录</a>
+        <a class="btn btn-solid btn-sm" href="login.html?tab=register">注册</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-hero spot-hero food-hero" id="foodHero">
+      <div class="page-hero-art" aria-hidden="true">
+        <span id="foodWatermark">食</span>
+        <svg viewBox="0 0 1440 300" preserveAspectRatio="none" focusable="false">
+          <path d="M0 250 200 150 380 230 580 110 800 245 1000 170 1200 240 1440 140V300H0Z"/>
+        </svg>
+      </div>
+      <div class="container page-hero-inner spot-hero-inner">
+        <p class="spot-hero-kicker">
+          <span class="level-pill" id="foodTag" data-level="">美食</span>
+          <span class="spot-hero-city" id="foodEyebrow">美食详情</span>
+        </p>
+        <h1 id="foodName">美食详情</h1>
+        <p class="spot-hero-lead" id="foodLead"></p>
+        <div class="spot-hero-actions">
+          <div id="foodRating"></div>
+          <button type="button" class="spot-fav-btn" id="foodFav" data-fav="" aria-pressed="false">
+            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span class="fav-text" id="foodFavText">收藏美食</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <div class="container">
+      <div class="spot-detail" id="foodDetail">
+        <div class="spot-main" id="foodMain"></div>
+        <div class="spot-reviews reviews-block" id="foodReviews" data-reviews-for=""></div>
+      </div>
+
+      <div class="empty-state" id="foodMissing" hidden></div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <span class="footer-mark" aria-hidden="true">黔</span>
+        <div>
+          <strong>黔行 · 贵州景区导览</strong>
+          <p>山路弯弯，风景慢慢。</p>
+        </div>
+      </div>
+      <div class="footer-links">
+        <a data-go-home>景区列表</a>
+        <a href="favorites.html">我的收藏</a>
+        <a href="login.html">登录 / 注册</a>
+      </div>
+      <p class="footer-note">演示项目。价格与开放信息请以商户最新公告为准。</p>
+    </div>
+  </footer>
+
+  <script src="assets/js/navigate.js" defer></script>
+  <script src="assets/js/data.js" defer></script>
+  <script src="assets/js/store.js" defer></script>
+  <script src="assets/js/reviews.js" defer></script>
+  <script src="assets/js/ui.js" defer></script>
+  <script src="assets/js/food.js" defer></script>
+</body>
+</html>
